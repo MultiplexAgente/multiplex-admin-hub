@@ -31,7 +31,7 @@ const RANGES = [
   { value: "90", label: "Últimos 90 dias" },
 ];
 
-export function MetricsPage() {
+function MetricsPage() {
   const { companyId } = useAuth();
   const [range, setRange] = useState("30");
 
