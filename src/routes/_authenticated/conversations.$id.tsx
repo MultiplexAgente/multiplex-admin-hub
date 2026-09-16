@@ -139,7 +139,7 @@ function ConversationDetailPage() {
   );
 }
 
-function Info({ label, value }: { label: string; value?: string | null }) {
+function Info({ label, value }: { label: string; value?: string | null | undefined }) {
   return (
     <div>
       <p className="text-xs text-muted-foreground">{label}</p>
