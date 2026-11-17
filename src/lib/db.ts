@@ -1,83 +1,30 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Database, Json } from "@/integrations/supabase/types";
+import type { Database } from "@/integrations/supabase/types";
 
-export type Agent = {
-  id: string;
-  name: string;
-  description: string | null;
-  active: boolean | null;
-  model: string | null;
-  system_prompt: string | null;
-  temperature: number | null;
-  company_id: string | null;
-  created_at: string | null;
-  updated_at: string | null;
-};
-
-export type Customer = {
-  id: string;
-  name: string | null;
-  phone: string | null;
-  email: string | null;
-  avatar_url: string | null;
-  notes: string | null;
-  company_id: string | null;
-  created_at: string | null;
-};
-
-export type Conversation = {
-  id: string;
-  status: string | null;
-  channel_type: string | null;
-  agent_id: string | null;
-  customer_id: string | null;
-  company_id: string | null;
-  tags: string[] | null;
-  metadata: Json;
-  last_message_at: string | null;
-  created_at: string | null;
-  updated_at: string | null;
-};
-
-export type Message = {
-  id: string;
-  conversation_id: string | null;
-  text: string | null;
-  sender_type: string | null;
-  media_url: string | null;
-  media_type: string | null;
-  status: string | null;
-  created_at: string | null;
-};
-
-export type Channel = {
-  id: string;
-  name: string | null;
-  type: string | null;
-  status: string | null;
-  active: boolean | null;
-  company_id: string | null;
-  created_at: string | null;
-};
+type Rows = Database["public"]["Tables"];
+export type Agent = Pick<Rows["agents"]["Row"],
+  "id" | "name" | "description" | "active" | "model" | "system_prompt" | "temperature" | "company_id" | "created_at" | "updated_at">;
+export type Customer = Pick<Rows["customers"]["Row"],
+  "id" | "name" | "phone" | "email" | "avatar_url" | "notes" | "company_id" | "created_at">;
+export type Conversation = Pick<Rows["conversations"]["Row"],
+  "id" | "status" | "channel_type" | "agent_id" | "customer_id" | "company_id" | "tags" | "metadata" | "last_message_at" | "created_at" | "updated_at">;
+export type Message = Pick<Rows["messages"]["Row"],
+  "id" | "conversation_id" | "text" | "sender_type" | "media_url" | "media_type" | "status" | "created_at">;
+export type Channel = Pick<Rows["channels"]["Row"],
+  "id" | "name" | "type" | "status" | "active" | "company_id" | "created_at">;
 
 export type CompanyUser = Database["public"]["Tables"]["company_users"]["Row"];
 
-export type Company = {
-  id: string;
-  name: string | null;
-  active: boolean | null;
-  phone: string | null;
-  email: string | null;
-};
+export type Company = Pick<Rows["companies"]["Row"], "id" | "name" | "active" | "phone" | "email">;
 
 const AGENT_COLS = "id,name,description,active,model,system_prompt,temperature,company_id,created_at,updated_at";
 const CONV_COLS =
   "id,status,channel_type,agent_id,customer_id,company_id,tags,metadata,last_message_at,created_at,updated_at";
 const MSG_COLS = "id,conversation_id,text,sender_type,media_url,media_type,status,created_at";
 
-function unwrap<T>(res: { data: T | null; error: { message: string } | null }): T {
+function unwrap<T>(res: { data: T[] | null; error: { message: string } | null }): T[] {
   if (res.error) throw new Error(res.error.message);
-  return (res.data ?? []) as T;
+  return res.data ?? [];
 }
 
 export async function fetchMyAccess(userId: string) {
@@ -88,7 +35,7 @@ export async function fetchMyAccess(userId: string) {
     .limit(1)
     .maybeSingle();
   if (res.error) return null;
-  return (res.data as CompanyUser | null) ?? null;
+  return res.data ?? null;
 }
 
 export async function fetchCompany(companyId: string) {
@@ -98,19 +45,19 @@ export async function fetchCompany(companyId: string) {
     .eq("id", companyId)
     .maybeSingle();
   if (res.error) return null;
-  return (res.data as Company | null) ?? null;
+  return res.data ?? null;
 }
 
 export async function fetchAgents(companyId?: string | null) {
   let q = supabase.from("agents").select(AGENT_COLS).order("created_at", { ascending: false });
   if (companyId) q = q.eq("company_id", companyId);
-  return unwrap<Agent[]>(await q);
+  return unwrap<Agent>(await q);
 }
 
 export async function fetchAgent(id: string) {
   const res = await supabase.from("agents").select(AGENT_COLS).eq("id", id).maybeSingle();
   if (res.error) throw new Error(res.error.message);
-  return res.data as Agent | null;
+  return res.data;
 }
 
 export async function saveAgent(agent: Partial<Agent> & { id?: string }, companyId?: string | null) {
@@ -145,7 +92,7 @@ export async function fetchChannels(companyId?: string | null) {
     .select("id,name,type,status,active,company_id,created_at")
     .order("created_at", { ascending: false });
   if (companyId) q = q.eq("company_id", companyId);
-  return unwrap<Channel[]>(await q);
+  return unwrap<Channel>(await q);
 }
 
 export async function fetchCustomers(companyId?: string | null) {
@@ -154,7 +101,7 @@ export async function fetchCustomers(companyId?: string | null) {
     .select("id,name,phone,email,avatar_url,notes,company_id,created_at")
     .limit(1000);
   if (companyId) q = q.eq("company_id", companyId);
-  return unwrap<Customer[]>(await q);
+  return unwrap<Customer>(await q);
 }
 
 export type ConversationFilters = {
@@ -175,13 +122,13 @@ export async function fetchConversations(companyId?: string | null, filters: Con
   if (filters.status && filters.status !== "todos") q = q.eq("status", filters.status);
   if (filters.agentId && filters.agentId !== "todos") q = q.eq("agent_id", filters.agentId);
   if (filters.since) q = q.gte("created_at", filters.since);
-  return unwrap<Conversation[]>(await q);
+  return unwrap<Conversation>(await q);
 }
 
 export async function fetchConversation(id: string) {
   const res = await supabase.from("conversations").select(CONV_COLS).eq("id", id).maybeSingle();
   if (res.error) throw new Error(res.error.message);
-  return res.data as Conversation | null;
+  return res.data;
 }
 
 export async function fetchMessages(conversationId: string) {
@@ -192,7 +139,7 @@ export async function fetchMessages(conversationId: string) {
     .order("created_at", { ascending: true })
     .limit(1000);
   if (res.error) throw new Error(res.error.message);
-  return (res.data ?? []) as Message[];
+  return res.data ?? [];
 }
 
 export async function fetchTeam(companyId?: string | null) {
@@ -201,11 +148,20 @@ export async function fetchTeam(companyId?: string | null) {
     .select("id,user_id,company_id,role,active,email,created_at")
     .order("created_at", { ascending: false });
   if (companyId) q = q.eq("company_id", companyId);
-  return unwrap<CompanyUser[]>(await q);
+  return unwrap<CompanyUser>(await q);
 }
 
 export async function updateTeamMember(id: string, patch: Database["public"]["Tables"]["company_users"]["Update"]) {
-  const res = await supabase.from("company_users").update(patch).eq("id", id);
+  const payload: Rows["company_users"]["Update"] = {
+    ...(patch.id !== undefined ? { id: patch.id } : {}),
+    ...(patch.user_id !== undefined ? { user_id: patch.user_id } : {}),
+    ...(patch.company_id !== undefined ? { company_id: patch.company_id } : {}),
+    ...(patch.created_at !== undefined ? { created_at: patch.created_at } : {}),
+    ...(patch.email !== undefined ? { email: patch.email } : {}),
+    ...(patch.role !== undefined ? { role: patch.role } : {}),
+    ...(patch.active !== undefined ? { active: patch.active } : {}),
+  };
+  const res = await supabase.from("company_users").update(payload).eq("id", id);
   if (res.error) throw new Error(res.error.message);
 }
 

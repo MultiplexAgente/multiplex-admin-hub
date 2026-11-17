@@ -41,3 +41,10 @@ test("team updates preserve false and invitations send a non-null company", asyn
     { operation: "insert", payload: { email: "test@example.com", role: "operator", active: true, company_id: "company-1" } },
   ]);
 });
+
+test("team partial updates omit undefined while preserving explicit nullable user_id", async () => {
+  await updateTeamMember("member-1", { role: "viewer", active: undefined, user_id: null });
+  expect(writes).toEqual([
+    { operation: "update", payload: { role: "viewer", user_id: null } },
+  ]);
+});

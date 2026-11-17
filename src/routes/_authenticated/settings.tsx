@@ -44,7 +44,7 @@ function SettingsPage() {
     try {
       const { error } = await supabase.auth.updateUser({
         password: newPassword,
-        ...(currentPassword ? ({ current_password: currentPassword } as Record<string, string>) : {}),
+        ...(currentPassword ? { current_password: currentPassword } : {}),
       });
       if (error) throw error;
       toast.success("Senha atualizada.");

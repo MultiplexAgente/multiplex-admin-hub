@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Database mutation payloads must use generated Supabase Insert/Update types and omit undefined fields, so partial updates preserve untouched columns under exactOptionalPropertyTypes.
+- Read models must derive from generated Supabase Row types and selected columns, so schema changes cannot be hidden by handwritten nullability or response casts.

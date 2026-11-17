@@ -13,7 +13,6 @@ import {
   fetchConversation,
   fetchMessages,
   formatDateTime,
-  type Customer,
 } from "@/lib/db";
 
 export const Route = createFileRoute("/_authenticated/conversations/$id")({
@@ -40,13 +39,14 @@ function ConversationDetailPage() {
     queryKey: ["customer", customerId],
     enabled: Boolean(customerId),
     queryFn: async () => {
+      if (!customerId) return null;
       const res = await supabase
         .from("customers")
         .select("id,name,phone,email,avatar_url,notes,company_id,created_at")
-        .eq("id", customerId as string)
+        .eq("id", customerId)
         .maybeSingle();
       if (res.error) throw new Error(res.error.message);
-      return res.data as Customer | null;
+      return res.data;
     },
   });
 
