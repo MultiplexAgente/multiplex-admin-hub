@@ -1,8 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Database, Json } from "@/integrations/supabase/types";
 
 export type Agent = {
   id: string;
-  name: string | null;
+  name: string;
   description: string | null;
   active: boolean | null;
   model: string | null;
@@ -32,7 +33,7 @@ export type Conversation = {
   customer_id: string | null;
   company_id: string | null;
   tags: string[] | null;
-  metadata: Record<string, unknown> | null;
+  metadata: Json;
   last_message_at: string | null;
   created_at: string | null;
   updated_at: string | null;
@@ -59,15 +60,7 @@ export type Channel = {
   created_at: string | null;
 };
 
-export type CompanyUser = {
-  id: string;
-  user_id: string | null;
-  company_id: string | null;
-  role: string | null;
-  active: boolean | null;
-  email: string | null;
-  created_at: string | null;
-};
+export type CompanyUser = Database["public"]["Tables"]["company_users"]["Row"];
 
 export type Company = {
   id: string;
@@ -121,18 +114,22 @@ export async function fetchAgent(id: string) {
 }
 
 export async function saveAgent(agent: Partial<Agent> & { id?: string }, companyId?: string | null) {
-  const payload = {
-    name: agent.name,
-    description: agent.description,
-    active: agent.active,
-    model: agent.model,
-    system_prompt: agent.system_prompt,
-    temperature: agent.temperature,
-    ...(agent.id ? {} : { company_id: companyId ?? null }),
+  const payload: Database["public"]["Tables"]["agents"]["Update"] = {
+    ...(agent.name !== undefined ? { name: agent.name } : {}),
+    ...(agent.description !== undefined ? { description: agent.description } : {}),
+    ...(agent.active !== undefined ? { active: agent.active } : {}),
+    ...(agent.model !== undefined ? { model: agent.model } : {}),
+    ...(agent.system_prompt !== undefined ? { system_prompt: agent.system_prompt } : {}),
+    ...(agent.temperature !== undefined ? { temperature: agent.temperature } : {}),
   };
-  const res = agent.id
-    ? await supabase.from("agents").update(payload).eq("id", agent.id).select(AGENT_COLS).maybeSingle()
-    : await supabase.from("agents").insert(payload).select(AGENT_COLS).maybeSingle();
+  let res;
+  if (agent.id) {
+    res = await supabase.from("agents").update(payload).eq("id", agent.id).select(AGENT_COLS).maybeSingle();
+  } else {
+    if (!companyId) throw new Error("Selecione uma empresa antes de criar um agente.");
+    if (!agent.name?.trim()) throw new Error("Informe o nome do agente.");
+    res = await supabase.from("agents").insert({ ...payload, name: agent.name, company_id: companyId }).select(AGENT_COLS).maybeSingle();
+  }
   if (res.error) throw new Error(res.error.message);
   return res.data as Agent;
 }
@@ -207,7 +204,7 @@ export async function fetchTeam(companyId?: string | null) {
   return unwrap<CompanyUser[]>(await q);
 }
 
-export async function updateTeamMember(id: string, patch: Partial<CompanyUser>) {
+export async function updateTeamMember(id: string, patch: Database["public"]["Tables"]["company_users"]["Update"]) {
   const res = await supabase.from("company_users").update(patch).eq("id", id);
   if (res.error) throw new Error(res.error.message);
 }
@@ -218,7 +215,8 @@ export async function removeTeamMember(id: string) {
 }
 
 export async function inviteTeamMember(email: string, role: string, companyId?: string | null) {
-  const res = await supabase.from("company_users").insert({ email, role, active: true, company_id: companyId ?? null });
+  if (!companyId) throw new Error("Selecione uma empresa antes de convidar um usuário.");
+  const res = await supabase.from("company_users").insert({ email, role, active: true, company_id: companyId });
   if (res.error) throw new Error(res.error.message);
 }
 

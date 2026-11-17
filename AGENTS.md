@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Database mutation payloads must use generated Supabase Insert/Update types and omit undefined fields, so partial updates preserve untouched columns under exactOptionalPropertyTypes.
