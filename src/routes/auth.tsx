@@ -64,8 +64,8 @@ function AuthPage() {
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-primary font-display text-base font-bold text-primary-foreground tracking-wider">
-            HUG
+          <div className="flex size-11 items-center justify-center rounded-xl bg-primary font-display text-base font-bold text-primary-foreground tracking-wider overflow-hidden shadow-md ring-1 ring-primary/30">
+            <img src="/images/hug-icon.jpg" alt="HUG" className="size-full object-cover" />
           </div>
           <div>
             <h1 className="font-display text-xl font-semibold tracking-tight">HUG Admin</h1>

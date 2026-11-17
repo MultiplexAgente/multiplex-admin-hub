@@ -22,6 +22,7 @@ function AuthenticatedLayout() {
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="flex h-14 items-center gap-2 border-b border-border px-4">
             <SidebarTrigger />
+            <img src="/images/hug-icon.jpg" alt="HUG" className="size-6 rounded-full object-cover ring-1 ring-primary/40" />
             <span className="font-display text-sm font-semibold tracking-wide text-primary">HUG Admin</span>
           </header>
           <main className="flex-1 space-y-6 p-6">
