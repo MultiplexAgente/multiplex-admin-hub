@@ -3,6 +3,7 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import hugLogo from "@/assets/hug-icon.jpg";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -22,7 +23,7 @@ function AuthenticatedLayout() {
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="flex h-14 items-center gap-2 border-b border-border px-4">
             <SidebarTrigger />
-            <img src="/images/hug-icon.jpg" alt="HUG" className="size-6 rounded-full object-cover ring-1 ring-primary/40" />
+            <img src={hugLogo} alt="HUG" className="size-6 rounded-full object-cover ring-1 ring-primary/40" />
             <span className="font-display text-sm font-semibold tracking-wide text-primary">HUG Admin</span>
           </header>
           <main className="flex-1 space-y-6 p-6">

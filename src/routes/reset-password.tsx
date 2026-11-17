@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import hugLogo from "@/assets/hug-icon.jpg";
 
 export const Route = createFileRoute("/reset-password")({
   ssr: false,
@@ -52,7 +53,19 @@ function ResetPasswordPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 rounded-2xl border border-border bg-card p-6">
+      <div className="w-full max-w-sm">
+        <div className="mb-6 flex items-center gap-3.5">
+          <img
+            src={hugLogo}
+            alt="HUG Logo"
+            className="size-12 rounded-2xl object-cover shadow-lg ring-1 ring-border shrink-0"
+          />
+          <div>
+            <h1 className="font-display text-xl font-bold tracking-tight text-foreground">HUG Admin</h1>
+            <p className="text-sm text-muted-foreground">Recuperação de Acesso</p>
+          </div>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-border bg-card p-6">
         <div>
           <h1 className="font-display text-lg font-semibold tracking-tight">Definir nova senha</h1>
           <p className="mt-1 text-sm text-muted-foreground">Escolha uma senha com pelo menos 8 caracteres.</p>
@@ -83,6 +96,7 @@ function ResetPasswordPage() {
           {busy ? "Salvando..." : "Salvar senha"}
         </Button>
       </form>
-    </main>
+    </div>
+  </main>
   );
 }

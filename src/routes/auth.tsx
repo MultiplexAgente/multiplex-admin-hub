@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import hugLogo from "@/assets/hug-icon.jpg";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -63,12 +64,14 @@ function AuthPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        <div className="mb-8 flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-primary font-display text-base font-bold text-primary-foreground tracking-wider overflow-hidden shadow-md ring-1 ring-primary/30">
-            <img src="/images/hug-icon.jpg" alt="HUG" className="size-full object-cover" />
-          </div>
+        <div className="mb-8 flex items-center gap-3.5">
+          <img
+            src={hugLogo}
+            alt="HUG Logo"
+            className="size-12 rounded-2xl object-cover shadow-lg ring-1 ring-border shrink-0"
+          />
           <div>
-            <h1 className="font-display text-xl font-semibold tracking-tight">HUG Admin</h1>
+            <h1 className="font-display text-xl font-bold tracking-tight text-foreground">HUG Admin</h1>
             <p className="text-sm text-muted-foreground">Painel Administrativo Central</p>
           </div>
         </div>

@@ -10,6 +10,7 @@ import {
   Users,
   LogOut,
 } from "lucide-react";
+import hugLogo from "@/assets/hug-icon.jpg";
 
 import {
   Sidebar,
@@ -53,9 +54,11 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary font-display text-sm font-bold text-primary-foreground tracking-wider overflow-hidden shadow-sm ring-1 ring-primary/30">
-            <img src="/images/hug-icon.jpg" alt="HUG" className="size-full object-cover" />
-          </div>
+          <img
+            src={hugLogo}
+            alt="HUG"
+            className="size-9 shrink-0 rounded-lg object-cover shadow-sm ring-1 ring-border"
+          />
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
             <p className="truncate font-display text-sm font-semibold tracking-wide">HUG Admin</p>
             <p className="truncate text-xs text-muted-foreground">Painel Central Multissegmento</p>
