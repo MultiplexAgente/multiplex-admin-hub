@@ -18,10 +18,10 @@ import { channelLabel, fetchChannels, formatDate } from "@/lib/db";
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
-      { title: "Configurações — Painel IA Multiplex" },
-      { name: "description", content: "Dados da conta, canais conectados e segurança do painel." },
-      { property: "og:title", content: "Configurações — Painel IA Multiplex" },
-      { property: "og:description", content: "Dados da conta, canais conectados e segurança do painel." },
+      { title: "Configurações — HUG Admin" },
+      { name: "description", content: "Dados da conta, canais conectados e segurança do painel no HUG." },
+      { property: "og:title", content: "Configurações — HUG Admin" },
+      { property: "og:description", content: "Dados da conta, canais conectados e segurança do painel no HUG." },
     ],
   }),
   component: SettingsPage,

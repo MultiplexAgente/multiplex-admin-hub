@@ -11,11 +11,11 @@ export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Entrar — Painel IA Multiplex" },
-      { name: "description", content: "Acesso ao painel administrativo da IA Multiplex." },
+      { title: "Entrar — HUG Admin" },
+      { name: "description", content: "Acesso ao painel administrativo central do HUG." },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Entrar — Painel IA Multiplex" },
-      { property: "og:description", content: "Acesso ao painel administrativo da IA Multiplex." },
+      { property: "og:title", content: "Entrar — HUG Admin" },
+      { property: "og:description", content: "Acesso ao painel administrativo central do HUG." },
     ],
   }),
   component: AuthPage,
@@ -64,12 +64,12 @@ function AuthPage() {
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-primary font-display text-base font-bold text-primary-foreground">
-            IA
+          <div className="flex size-11 items-center justify-center rounded-xl bg-primary font-display text-base font-bold text-primary-foreground tracking-wider">
+            HUG
           </div>
           <div>
-            <h1 className="font-display text-xl font-semibold tracking-tight">IA Multiplex</h1>
-            <p className="text-sm text-muted-foreground">Painel administrativo</p>
+            <h1 className="font-display text-xl font-semibold tracking-tight">HUG Admin</h1>
+            <p className="text-sm text-muted-foreground">Painel Administrativo Central</p>
           </div>
         </div>
 

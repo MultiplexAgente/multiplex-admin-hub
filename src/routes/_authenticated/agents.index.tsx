@@ -22,10 +22,10 @@ import { deleteAgent, fetchAgents, formatDate, saveAgent, type Agent } from "@/l
 export const Route = createFileRoute("/_authenticated/agents/")({
   head: () => ({
     meta: [
-      { title: "Agentes de IA — Painel IA Multiplex" },
-      { name: "description", content: "Crie, edite e ative os agentes de IA que atendem seus clientes." },
-      { property: "og:title", content: "Agentes de IA — Painel IA Multiplex" },
-      { property: "og:description", content: "Crie, edite e ative os agentes de IA que atendem seus clientes." },
+      { title: "Agentes HUG AI — HUG Admin" },
+      { name: "description", content: "Crie, edite e ative os agentes HUG AI que atendem seus clientes." },
+      { property: "og:title", content: "Agentes HUG AI — HUG Admin" },
+      { property: "og:description", content: "Crie, edite e ative os agentes HUG AI que atendem seus clientes." },
     ],
   }),
   component: AgentsPage,

@@ -22,10 +22,10 @@ import { channelLabel, fetchAgents, fetchConversations, formatDateTime } from "@
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Visão geral — Painel IA Multiplex" },
-      { name: "description", content: "Atendimentos, conversas ativas e desempenho da IA Multiplex." },
-      { property: "og:title", content: "Visão geral — Painel IA Multiplex" },
-      { property: "og:description", content: "Atendimentos, conversas ativas e desempenho da IA Multiplex." },
+      { title: "Visão Geral — HUG Admin" },
+      { name: "description", content: "Atendimentos, empresas ativas, conversas e desempenho do HUG AI." },
+      { property: "og:title", content: "Visão Geral — HUG Admin" },
+      { property: "og:description", content: "Atendimentos, empresas ativas, conversas e desempenho do HUG AI." },
     ],
   }),
   component: DashboardPage,

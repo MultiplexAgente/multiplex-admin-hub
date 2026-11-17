@@ -18,10 +18,10 @@ import {
 export const Route = createFileRoute("/_authenticated/conversations/$id")({
   head: () => ({
     meta: [
-      { title: "Conversa — Painel IA Multiplex" },
-      { name: "description", content: "Transcrição completa do atendimento e dados do contato." },
-      { property: "og:title", content: "Conversa — Painel IA Multiplex" },
-      { property: "og:description", content: "Transcrição completa do atendimento e dados do contato." },
+      { title: "Conversa — HUG Admin" },
+      { name: "description", content: "Transcrição completa do atendimento e dados do contato no HUG AI." },
+      { property: "og:title", content: "Conversa — HUG Admin" },
+      { property: "og:description", content: "Transcrição completa do atendimento e dados do contato no HUG AI." },
     ],
   }),
   component: ConversationDetailPage,

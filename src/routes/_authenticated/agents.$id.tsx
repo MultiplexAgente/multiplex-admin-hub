@@ -18,10 +18,10 @@ import { fetchAgent, saveAgent } from "@/lib/db";
 export const Route = createFileRoute("/_authenticated/agents/$id")({
   head: () => ({
     meta: [
-      { title: "Editar agente — Painel IA Multiplex" },
-      { name: "description", content: "Configure nome, modelo, temperatura e instruções do agente de IA." },
-      { property: "og:title", content: "Editar agente — Painel IA Multiplex" },
-      { property: "og:description", content: "Configure nome, modelo, temperatura e instruções do agente de IA." },
+      { title: "Editar Agente HUG AI — HUG Admin" },
+      { name: "description", content: "Configure nome, modelo, temperatura e instruções do agente HUG AI." },
+      { property: "og:title", content: "Editar Agente HUG AI — HUG Admin" },
+      { property: "og:description", content: "Configure nome, modelo, temperatura e instruções do agente HUG AI." },
     ],
   }),
   component: AgentDetailPage,

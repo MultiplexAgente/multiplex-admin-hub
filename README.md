@@ -1,10 +1,10 @@
-# Multiplex Admin Hub
+# HUG Admin — Painel Central Multissegmento
 
-Painel administrativo completo para a IA Multiplex.
-Conectar exclusivamente ao Supabase externo existente (project ref: mbjqzjipiuwtgmoxsqfu, URL https://mbjqzjipiuwtgmoxsqfu.supabase.co). Não utilizar Lovable Cloud.
-Criar interface para gerenciamento de agentes de IA, histórico de atendimentos/conversas (WhatsApp e Instagram), métricas de desempenho, configurações e controle de usuários.
-
-This project was built with [Lovable](https://lovable.dev).
+Painel administrativo central para gestão da plataforma **HUG**:
+- Gerenciamento de empresas multissegmento com **Código Exclusivo de Isolamento** (ex: `1056`, `2030`, etc.).
+- Convite e controle de permissões de usuários vinculados às empresas.
+- Gestão de agentes **HUG AI**, telemetria de atendimentos e métricas de desempenho.
+- Conectado ao Supabase externo existente (`mbjqzjipiuwtgmoxsqfu`).
 
 **Live app**: https://multiplex-control-hub.lovable.app
 

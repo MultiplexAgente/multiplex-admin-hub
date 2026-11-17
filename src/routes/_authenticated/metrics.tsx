@@ -16,10 +16,10 @@ import { channelLabel, fetchAgents, fetchConversations } from "@/lib/db";
 export const Route = createFileRoute("/_authenticated/metrics")({
   head: () => ({
     meta: [
-      { title: "Métricas — Painel IA Multiplex" },
-      { name: "description", content: "Desempenho dos agentes de IA por canal e por período." },
-      { property: "og:title", content: "Métricas — Painel IA Multiplex" },
-      { property: "og:description", content: "Desempenho dos agentes de IA por canal e por período." },
+      { title: "Métricas — HUG Admin" },
+      { name: "description", content: "Desempenho dos agentes HUG AI por canal, empresa e por período." },
+      { property: "og:title", content: "Métricas — HUG Admin" },
+      { property: "og:description", content: "Desempenho dos agentes HUG AI por canal, empresa e por período." },
     ],
   }),
   component: MetricsPage,

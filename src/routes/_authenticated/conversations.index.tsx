@@ -14,10 +14,10 @@ import { channelLabel, fetchAgents, fetchConversations, fetchCustomers, formatDa
 export const Route = createFileRoute("/_authenticated/conversations/")({
   head: () => ({
     meta: [
-      { title: "Atendimentos — Painel IA Multiplex" },
-      { name: "description", content: "Histórico de conversas de WhatsApp e Instagram atendidas pela IA." },
-      { property: "og:title", content: "Atendimentos — Painel IA Multiplex" },
-      { property: "og:description", content: "Histórico de conversas de WhatsApp e Instagram atendidas pela IA." },
+      { title: "Atendimentos — HUG Admin" },
+      { name: "description", content: "Histórico de conversas de WhatsApp e Instagram atendidas pelo HUG AI." },
+      { property: "og:title", content: "Atendimentos — HUG Admin" },
+      { property: "og:description", content: "Histórico de conversas de WhatsApp e Instagram atendidas pelo HUG AI." },
     ],
   }),
   component: ConversationsPage,

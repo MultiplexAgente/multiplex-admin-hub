@@ -11,11 +11,11 @@ export const Route = createFileRoute("/reset-password")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Nova senha — Painel IA Multiplex" },
-      { name: "description", content: "Defina uma nova senha de acesso ao painel da IA Multiplex." },
+      { title: "Nova senha — HUG Admin" },
+      { name: "description", content: "Defina uma nova senha de acesso ao painel HUG Admin." },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Nova senha — Painel IA Multiplex" },
-      { property: "og:description", content: "Defina uma nova senha de acesso ao painel." },
+      { property: "og:title", content: "Nova senha — HUG Admin" },
+      { property: "og:description", content: "Defina uma nova senha de acesso ao painel HUG Admin." },
     ],
   }),
   component: ResetPasswordPage,

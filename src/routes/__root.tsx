@@ -80,15 +80,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Painel IA Multiplex" },
+      { title: "HUG Admin — Painel Central Multissegmento" },
       {
         name: "description",
-        content: "Painel administrativo da IA Multiplex: agentes, atendimentos e métricas.",
+        content: "Painel administrativo central do HUG: gestão de empresas, códigos de acesso, usuários, agentes HUG AI e métricas.",
       },
-      { property: "og:title", content: "Painel IA Multiplex" },
+      { property: "og:title", content: "HUG Admin — Painel Central Multissegmento" },
       {
         property: "og:description",
-        content: "Painel administrativo da IA Multiplex: agentes, atendimentos e métricas.",
+        content: "Painel administrativo central do HUG: gestão de empresas, códigos de acesso, usuários, agentes HUG AI e métricas.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

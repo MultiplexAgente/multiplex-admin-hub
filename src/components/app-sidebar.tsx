@@ -2,7 +2,8 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard,
-  Bot,
+  Building2,
+  Cpu,
   MessagesSquare,
   BarChart3,
   Settings,
@@ -27,10 +28,11 @@ import { useAuth } from "@/hooks/use-auth";
 
 const items = [
   { title: "Visão geral", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Agentes de IA", url: "/agents", icon: Bot },
+  { title: "Empresas & Códigos", url: "/companies", icon: Building2 },
+  { title: "Usuários & Convites", url: "/users", icon: Users },
+  { title: "Agentes HUG AI", url: "/agents", icon: Cpu },
   { title: "Atendimentos", url: "/conversations", icon: MessagesSquare },
   { title: "Métricas", url: "/metrics", icon: BarChart3 },
-  { title: "Usuários", url: "/users", icon: Users },
   { title: "Configurações", url: "/settings", icon: Settings },
 ] as const;
 
@@ -51,12 +53,12 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary font-display text-sm font-bold text-primary-foreground">
-            IA
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary font-display text-sm font-bold text-primary-foreground tracking-wider">
+            HUG
           </div>
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-            <p className="truncate font-display text-sm font-semibold">IA Multiplex</p>
-            <p className="truncate text-xs text-muted-foreground">{company?.name ?? "Painel administrativo"}</p>
+            <p className="truncate font-display text-sm font-semibold tracking-wide">HUG Admin</p>
+            <p className="truncate text-xs text-muted-foreground">Painel Central Multissegmento</p>
           </div>
         </div>
       </SidebarHeader>
