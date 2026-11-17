@@ -113,8 +113,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR" className="dark">
-      <head>
+            <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'try{function p(){var b=document.querySelectorAll("#lovable-badge,[id*=\"lovable\"],[class*=\"lovable-badge\"],[data-lovable-badge],a[href*=\"lovable.dev\"]");for(var i=0;i<b.length;i++)b[i].remove()}p();if(window.MutationObserver)new MutationObserver(p).observe(document.documentElement,{childList:true,subtree:true})}catch(e){}',
+          }}
+        />
+        
       </head>
       <body>
         {children}
@@ -137,3 +144,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
