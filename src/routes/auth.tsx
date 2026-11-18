@@ -110,7 +110,7 @@ function AuthPage() {
           <img
             src={hugLogo}
             alt="HUG Logo"
-            className="size-14 rounded-2xl object-cover shadow-xl ring-2 ring-primary/40 shrink-0"
+            className="size-14 rounded-full object-cover shadow-xl ring-2 ring-primary/40 shrink-0"
           />
           <div>
             <div className="flex items-center gap-2">

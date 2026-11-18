@@ -57,7 +57,7 @@ export function AppSidebar() {
           <img
             src={hugLogo}
             alt="HUG"
-            className="size-9 shrink-0 rounded-lg object-cover shadow-sm ring-1 ring-border"
+            className="size-9 shrink-0 rounded-full object-cover shadow-sm ring-1 ring-border"
           />
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
             <p className="truncate font-display text-sm font-semibold tracking-wide">HUG Admin</p>

@@ -58,7 +58,7 @@ function ResetPasswordPage() {
           <img
             src={hugLogo}
             alt="HUG Logo"
-            className="size-12 rounded-2xl object-cover shadow-lg ring-1 ring-border shrink-0"
+            className="size-12 rounded-full object-cover shadow-lg ring-1 ring-border shrink-0"
           />
           <div>
             <h1 className="font-display text-xl font-bold tracking-tight text-foreground">HUG Admin</h1>
