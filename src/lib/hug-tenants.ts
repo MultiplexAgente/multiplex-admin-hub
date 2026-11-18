@@ -13,6 +13,23 @@ export type SegmentoEmpresa =
   | "beleza"
   | "construcao";
 
+export type StatusAssinatura = "em_dia" | "pendente" | "suspenso";
+
+export const PRECOS_PLANOS: Record<"Starter" | "Business" | "Premium", number> = {
+  Starter: 299,
+  Business: 499,
+  Premium: 899,
+};
+
+export interface FaturaMensal {
+  id: string;
+  mesReferencia: string;
+  valor: number;
+  vencimento: string;
+  pagoEm?: string | undefined;
+  status: "pago" | "pendente" | "atrasado";
+}
+
 export interface HugEmpresa {
   id: string;
   codigo: string;
@@ -28,6 +45,14 @@ export interface HugEmpresa {
   status?: ("ativo" | "suspenso") | undefined;
   usuariosAtivos?: number | undefined;
   criadoEm?: string | undefined;
+  // Gestão de Cobrança & Assinatura
+  valorMensalidade: number;
+  diaVencimento: number;
+  statusAssinatura: StatusAssinatura;
+  motivoBloqueio?: string | undefined;
+  dataUltimoPagamento?: string | undefined;
+  tokenConvite: string;
+  faturas?: FaturaMensal[] | undefined;
 }
 
 export type PapelUsuario = "admin" | "gestor" | "funcionario" | "caixa";
@@ -158,6 +183,22 @@ export function salvarEmpresa(empresa: Partial<HugEmpresa> & { nome: string; seg
     status: empresa.status || "ativo",
     usuariosAtivos: empresa.usuariosAtivos || 1,
     criadoEm: empresa.criadoEm || new Date().toISOString(),
+    valorMensalidade: empresa.valorMensalidade ?? (PRECOS_PLANOS[empresa.plano || "Business"] || 499),
+    diaVencimento: empresa.diaVencimento || 10,
+    statusAssinatura: empresa.statusAssinatura || "em_dia",
+    motivoBloqueio: empresa.motivoBloqueio,
+    dataUltimoPagamento: empresa.dataUltimoPagamento || new Date().toISOString(),
+    tokenConvite: empresa.tokenConvite || `CONV-${codigo}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+    faturas: empresa.faturas || [
+      {
+        id: `fat-${Date.now()}`,
+        mesReferencia: new Date().toLocaleDateString("pt-BR", { month: "2-digit", year: "numeric" }),
+        valor: empresa.valorMensalidade ?? (PRECOS_PLANOS[empresa.plano || "Business"] || 499),
+        vencimento: new Date(new Date().getFullYear(), new Date().getMonth(), empresa.diaVencimento || 10).toISOString().split("T")[0]!,
+        pagoEm: new Date().toISOString().split("T")[0]!,
+        status: "pago",
+      },
+    ],
   };
 
   const index = lista.findIndex((e) => e.id === nova.id);
@@ -186,6 +227,125 @@ export function buscarEmpresaPorCodigo(codigo: string): HugEmpresa | undefined {
   const lista = getEmpresas();
   const limpo = codigo.trim().toLowerCase();
   return lista.find((e) => e.codigo.toLowerCase() === limpo);
+}
+
+/**
+ * Gera os dados de convite com URL direcionada para o painel específico do segmento da empresa
+ */
+export function gerarConvitePainel(empresa: HugEmpresa): {
+  url: string;
+  nomePainel: string;
+  segmentoLabel: string;
+  textoWhatsApp: string;
+  linkWhatsApp: string;
+} {
+  const repo = REPOSITORIOS_SEGMENTO[empresa.segmento] || {
+    nome: "HUG Multi-Tenant",
+    liveApp: "https://multiplex-ia.lovable.app",
+  };
+  const token = empresa.tokenConvite || `CONV-${empresa.codigo}`;
+  const url = `${repo.liveApp}/?empresa=${empresa.codigo}&token=${token}`;
+  const texto =
+    `Olá ${empresa.nome}!\n\n` +
+    `Seu acesso exclusivo ao sistema ${repo.nome} está liberado com sucesso.\n\n` +
+    `• Segmento: ${empresa.segmentoLabel}\n` +
+    `• Código da Empresa: ${empresa.codigo}\n` +
+    `• Painel de Acesso: ${url}\n\n` +
+    `Utilize o seu Código (${empresa.codigo}) para acessar o balcão e operar sua unidade.`;
+
+  return {
+    url,
+    nomePainel: repo.nome,
+    segmentoLabel: empresa.segmentoLabel,
+    textoWhatsApp: texto,
+    linkWhatsApp: `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`,
+  };
+}
+
+/**
+ * Alterna o status da assinatura entre 'em_dia' e 'suspenso' (com bloqueio imediato do sistema)
+ */
+export function alternarStatusAssinatura(
+  empresaId: string,
+  novoStatus: StatusAssinatura,
+  motivo?: string
+): HugEmpresa {
+  const lista = getEmpresas();
+  const idx = lista.findIndex((e) => e.id === empresaId);
+  if (idx < 0) throw new Error("Empresa não encontrada.");
+
+  const atual = lista[idx]!;
+  const atualizada: HugEmpresa = {
+    ...atual,
+    statusAssinatura: novoStatus,
+    status: novoStatus === "suspenso" ? "suspenso" : "ativo",
+    motivoBloqueio:
+      novoStatus === "suspenso"
+        ? motivo || "Assinatura mensal pendente / não paga. Sistema temporariamente suspenso."
+        : undefined,
+    dataUltimoPagamento:
+      novoStatus === "em_dia" ? new Date().toISOString() : atual.dataUltimoPagamento,
+  };
+
+  lista[idx] = atualizada;
+  localStorage.setItem(STORAGE_KEY_EMPRESAS, JSON.stringify(lista));
+  return atualizada;
+}
+
+/**
+ * Registra o pagamento da mensalidade de uma empresa
+ */
+export function registrarPagamentoMensalidade(
+  empresaId: string,
+  valorPago?: number
+): HugEmpresa {
+  const lista = getEmpresas();
+  const idx = lista.findIndex((e) => e.id === empresaId);
+  if (idx < 0) throw new Error("Empresa não encontrada.");
+
+  const atual = lista[idx]!;
+  const mesAtual = new Date().toLocaleDateString("pt-BR", {
+    month: "2-digit",
+    year: "numeric",
+  });
+  const valor = valorPago ?? atual.valorMensalidade;
+
+  const faturas = atual.faturas ? [...atual.faturas] : [];
+  const faturaMes = faturas.find((f) => f.mesReferencia === mesAtual);
+
+  if (faturaMes) {
+    faturaMes.status = "pago";
+    faturaMes.pagoEm = new Date().toISOString().split("T")[0];
+    faturaMes.valor = valor;
+  } else {
+    faturas.unshift({
+      id: `fat-${Date.now()}`,
+      mesReferencia: mesAtual,
+      valor,
+      vencimento: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        atual.diaVencimento || 10
+      )
+        .toISOString()
+        .split("T")[0]!,
+      pagoEm: new Date().toISOString().split("T")[0],
+      status: "pago",
+    });
+  }
+
+  const atualizada: HugEmpresa = {
+    ...atual,
+    statusAssinatura: "em_dia",
+    status: "ativo",
+    motivoBloqueio: undefined,
+    dataUltimoPagamento: new Date().toISOString(),
+    faturas,
+  };
+
+  lista[idx] = atualizada;
+  localStorage.setItem(STORAGE_KEY_EMPRESAS, JSON.stringify(lista));
+  return atualizada;
 }
 
 /**
