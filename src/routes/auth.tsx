@@ -66,12 +66,7 @@ function AuthPage() {
             className="size-14 rounded-full object-cover shadow-xl ring-2 ring-primary/40 shrink-0"
           />
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">HUG Admin</h1>
-              <span className="rounded-md bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary">
-                PRO
-              </span>
-            </div>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">HUG Admin</h1>
             <p className="text-xs text-muted-foreground">Painel Central de Gestão Multissegmento</p>
           </div>
         </div>
