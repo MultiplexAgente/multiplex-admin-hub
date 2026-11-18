@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Building2, Lock, Mail, ArrowRight } from "lucide-react";
+import { Lock, Mail, ArrowRight } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { buscarEmpresaPorCodigo } from "@/lib/hug-tenants";
 import hugLogo from "@/assets/hug-icon.jpg";
 
 export const Route = createFileRoute("/auth")({
@@ -26,43 +25,9 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [codigoEmpresa, setCodigoEmpresa] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const [empresaDetectada, setEmpresaDetectada] = useState<{ nome: string; segmentoLabel: string } | null>(null);
-
-  // Carrega automaticamente o código da loja salvo no dispositivo
-  useEffect(() => {
-    const salvo =
-      localStorage.getItem("hug_codigo_loja") ||
-      localStorage.getItem("hug_codigo_farmacia") ||
-      "0001";
-    if (salvo) {
-      setCodigoEmpresa(salvo);
-      const emp = buscarEmpresaPorCodigo(salvo);
-      if (emp) {
-        setEmpresaDetectada({ nome: emp.nome, segmentoLabel: emp.segmentoLabel });
-      }
-    }
-  }, []);
-
-  // Atualiza a empresa detectada e salva no localStorage
-  const handleCodigoChange = (valor: string) => {
-    const limpo = valor.trim();
-    setCodigoEmpresa(limpo);
-    if (limpo) {
-      localStorage.setItem("hug_codigo_loja", limpo);
-      const emp = buscarEmpresaPorCodigo(limpo);
-      if (emp) {
-        setEmpresaDetectada({ nome: emp.nome, segmentoLabel: emp.segmentoLabel });
-      } else {
-        setEmpresaDetectada(null);
-      }
-    } else {
-      setEmpresaDetectada(null);
-    }
-  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -74,10 +39,6 @@ function AuthPage() {
     event.preventDefault();
     setBusy(true);
     try {
-      if (codigoEmpresa) {
-        localStorage.setItem("hug_codigo_loja", codigoEmpresa);
-      }
-
       const { error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
@@ -112,32 +73,8 @@ function AuthPage() {
           </div>
         </div>
 
-        {/* Card de Login Padronizado */}
+        {/* Card de Login Administrativo */}
         <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-border/80 bg-card/90 backdrop-blur-sm p-6 shadow-xl">
-          {/* Campo Pequeno de Código da Empresa com Memória Local */}
-          <div className="space-y-1.5">
-            <Label htmlFor="codigo" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Cód. Empresa / Loja
-            </Label>
-            <div className="relative">
-              <Building2 className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
-              <Input
-                id="codigo"
-                type="text"
-                value={codigoEmpresa}
-                onChange={(e) => handleCodigoChange(e.target.value)}
-                placeholder="Ex: 1056 ou 0001"
-                className="pl-9 font-mono text-sm tracking-wide bg-background/50"
-              />
-            </div>
-            {empresaDetectada && (
-              <div className="rounded-md bg-primary/10 border border-primary/20 px-2.5 py-1 text-[11px] text-primary flex items-center justify-between">
-                <span className="font-medium truncate">{empresaDetectada.nome}</span>
-                <span className="text-[10px] opacity-80">{empresaDetectada.segmentoLabel}</span>
-              </div>
-            )}
-          </div>
-
           <div className="space-y-1.5">
             <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               E-mail
