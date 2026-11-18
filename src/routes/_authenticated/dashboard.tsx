@@ -10,7 +10,6 @@ import {
   Store,
   Layers,
   ArrowUpRight,
-  Sparkles,
 } from "lucide-react";
 
 import { PageHeader } from "@/components/page-header";
@@ -93,7 +92,7 @@ export function DashboardPage() {
     return [
       { name: "Farmácias", value: 48600, percentage: 32.6, color: "#10b981" },
       { name: "Mercados", value: 39400, percentage: 26.4, color: "#06b6d4" },
-      { name: "Construção", value: 24800, percentage: 16.6, color: "#f59e0b" },
+      { name: "Materiais", value: 24800, percentage: 16.6, color: "#f59e0b" },
       { name: "Gastronomia", value: 18200, percentage: 12.2, color: "#8b5cf6" },
       { name: "Moda & Vestuário", value: 11400, percentage: 7.6, color: "#ec4899" },
       { name: "Beleza & Estética", value: 6520, percentage: 4.6, color: "#14b8a6" },
