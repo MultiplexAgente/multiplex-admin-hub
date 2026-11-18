@@ -52,7 +52,7 @@ export const SEGMENTOS_LABELS: Record<SegmentoEmpresa, string> = {
   moda: "Moda & Vestuário",
   gastronomia: "Restaurantes & Gastronomia",
   beleza: "Salões & Estética",
-  construcao: "Materiais de Construção & Ferramentas",
+  construcao: "Materiais, Papelarias, Livrarias & Ferramentas",
 };
 
 export const PAPEIS_LABELS: Record<PapelUsuario, string> = {
@@ -84,7 +84,7 @@ export const REPOSITORIOS_SEGMENTO: Record<SegmentoEmpresa, { nome: string; live
     liveApp: "https://hug-beleza-data-bridge.lovable.app",
   },
   construcao: {
-    nome: "HUG Construção",
+    nome: "HUG Materiais",
     liveApp: "https://hug-construcao-connect.lovable.app",
   },
 };
