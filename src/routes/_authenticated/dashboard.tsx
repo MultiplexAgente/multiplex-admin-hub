@@ -58,14 +58,11 @@ export function DashboardPage() {
   ).length;
   const activeAgents = (agents.data ?? []).filter((a) => a.active).length;
 
-  // Série temporal dos últimos 14 dias (combinando faturamento e atendimentos)
+  // Série temporal dos últimos 14 dias (somente operações reais)
   const timeSeriesData: TimeSeriesPoint[] = useMemo(() => {
     const days = 14;
     const now = new Date();
     const result: TimeSeriesPoint[] = [];
-
-    // Faturamento base calibrado por dia com crescimento saudável
-    const dailyBaseRevenue = [7840, 8920, 9410, 8100, 11200, 14350, 12800, 9600, 10400, 12900, 11800, 13750, 15900, 16850];
 
     for (let i = days - 1; i >= 0; i--) {
       const d = new Date(now);
@@ -75,84 +72,73 @@ export function DashboardPage() {
         (c) => c.created_at && new Date(c.created_at).toDateString() === d.toDateString(),
       ).length;
 
-      const idx = days - 1 - i;
-      const calculatedRev = (dailyBaseRevenue[idx] ?? 10000) + convsOnDay * 120;
-
       result.push({
         date: dayStr,
-        revenue: calculatedRev,
-        count: convsOnDay > 0 ? convsOnDay : Math.floor(calculatedRev / 420) + 12,
+        revenue: 0,
+        count: convsOnDay,
       });
     }
     return result;
   }, [rows]);
 
-  // Distribuição por segmento (Farmácias, Mercados, Moda, Gastronomia, Beleza, Construção)
+  // Distribuição por segmento baseada estritamente nas empresas cadastradas reais
   const segmentData: DistributionPoint[] = useMemo(() => {
-    return [
-      { name: "Farmácias", value: 48600, percentage: 32.6, color: "#10b981" },
-      { name: "Mercados", value: 39400, percentage: 26.4, color: "#06b6d4" },
-      { name: "Materiais", value: 24800, percentage: 16.6, color: "#f59e0b" },
-      { name: "Gastronomia", value: 18200, percentage: 12.2, color: "#8b5cf6" },
-      { name: "Moda & Vestuário", value: 11400, percentage: 7.6, color: "#ec4899" },
-      { name: "Beleza & Estética", value: 6520, percentage: 4.6, color: "#14b8a6" },
-    ];
-  }, []);
+    if (empresas.length === 0) return [];
+    const counts: Record<string, number> = {};
+    empresas.forEach((e) => {
+      counts[e.segmentoLabel] = (counts[e.segmentoLabel] ?? 0) + 1;
+    });
+    const total = empresas.length;
+    return Object.entries(counts).map(([name, count]) => ({
+      name,
+      value: count,
+      percentage: Number(((count / total) * 100).toFixed(1)),
+    }));
+  }, [empresas]);
 
-  // Distribuição por canal
+  // Distribuição por canal baseada estritamente nas conversas reais
   const channelData: DistributionPoint[] = useMemo(() => {
-    const rawCounts: Record<string, number> = {
-      "WhatsApp Business": 412,
-      "Frente de Caixa (PDV)": 286,
-      "Balcão & Televendas": 154,
-      "Catálogo Digital / Web": 118,
-      "HUG Mobile": 76,
-    };
-
+    if (rows.length === 0) return [];
+    const rawCounts: Record<string, number> = {};
     rows.forEach((c) => {
       const label = channelLabel(c.channel_type);
       rawCounts[label] = (rawCounts[label] ?? 0) + 1;
     });
-
     return Object.entries(rawCounts).map(([name, value]) => ({ name, value }));
   }, [rows]);
 
-  // KPI Cards Executivos (inspirados no AgriRoute e É Pra Já)
+  // KPI Cards Executivos (Baseados estritamente em dados reais)
   const kpiCards: HugKPICardData[] = [
     {
       title: "Faturamento HUG Consolidado",
-      value: 148920,
+      value: 0,
       format: "currency",
-      subtitle: "Faturamento acumulado em 30 dias",
+      subtitle: "Aguardando primeiros pedidos",
       icon: Receipt,
-      trend: { value: 18.4, isPositive: true, label: "vs mês anterior" },
-      badge: "6 Segmentos",
+      badge: "Início dos Testes",
     },
     {
       title: "Empresas & Unidades Ativas",
       value: empresas.length,
       format: "number",
-      subtitle: "Com código de acesso auditado",
+      subtitle: empresas.length > 0 ? "Com código de acesso auditado" : "Nenhuma empresa cadastrada",
       icon: Store,
-      trend: { value: 12.0, isPositive: true, label: "novas filiais" },
-      badge: "Isoladas",
+      badge: `${empresas.length} Cadastradas`,
     },
     {
       title: "Atendimentos HUG AI",
-      value: rows.length > 0 ? rows.length : 1046,
+      value: rows.length,
       format: "number",
-      subtitle: `${todayCount || 42} atendimentos hoje`,
+      subtitle: `${todayCount} atendimentos hoje`,
       icon: Headphones,
-      trend: { value: 24.8, isPositive: true, label: "resolução direta" },
-      badge: "96.4% precisão",
+      badge: "Tempo Real",
     },
     {
       title: "Agentes HUG Especializados",
-      value: activeAgents > 0 ? activeAgents : 6,
+      value: activeAgents,
       format: "number",
-      subtitle: "6 modelos verticais sincronizados",
+      subtitle: "Modelos verticais sincronizados",
       icon: Layers,
-      trend: { value: 100, isPositive: true, label: "ativos 24/7" },
       badge: "BonaSoft Core",
     },
   ];
@@ -214,34 +200,42 @@ export function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/40 font-normal">
-                {empresas.map((emp: HugEmpresa) => (
-                  <tr key={emp.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-3">
-                      <span className="font-mono font-bold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-md text-xs">
-                        {emp.codigo}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-medium text-foreground">{emp.nome}</td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      <span className="inline-flex items-center gap-1.5 text-xs">
-                        {emp.segmentoLabel}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge variant="outline" className="text-[11px] border-border/80">
-                        {emp.plano}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">
-                      {emp.cidade} - {emp.estado}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[11px]">
-                        Ativo
-                      </Badge>
+                {empresas.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-xs text-muted-foreground">
+                      Nenhuma empresa cadastrada no momento. Use a aba "Empresas & Códigos" para cadastrar a primeira loja.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  empresas.map((emp: HugEmpresa) => (
+                    <tr key={emp.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-4 py-3">
+                        <span className="font-mono font-bold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-md text-xs">
+                          {emp.codigo}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-medium text-foreground">{emp.nome}</td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        <span className="inline-flex items-center gap-1.5 text-xs">
+                          {emp.segmentoLabel}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge variant="outline" className="text-[11px] border-border/80">
+                          {emp.plano}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">
+                        {emp.cidade} - {emp.estado}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[11px]">
+                          Ativo
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

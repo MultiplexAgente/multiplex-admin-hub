@@ -321,54 +321,64 @@ export const HugAnalyticsCharts: React.FC<HugAnalyticsChartsProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
-            <div className="h-[210px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={coloredSegments}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={55}
-                    outerRadius={80}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    {coloredSegments.map((entry: ColoredDistributionItem, index: number) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(val: number) => [
-                      val >= 100 ? formatCurrency(val) : `${val}%`,
-                      "Volume",
-                    ]}
-                    contentStyle={{
-                      backgroundColor: "var(--popover)",
-                      border: "1px solid var(--border)",
-                      borderRadius: "10px",
-                      fontSize: "12px",
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="mt-3 space-y-2 border-t border-border/50 pt-3">
-              {coloredSegments.map((item: ColoredDistributionItem) => (
-                <div key={item.name} className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span
-                      className="size-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="text-muted-foreground truncate">{item.name}</span>
-                  </div>
-                  <span className="font-semibold text-foreground font-mono">
-                    {item.percentage}%
-                  </span>
+            {coloredSegments.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-[260px] text-muted-foreground text-xs text-center px-4">
+                <PieIcon className="size-8 opacity-25 mb-2 text-cyan-500" />
+                <p className="font-medium text-foreground">Sem dados de categorias</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Cadastre suas primeiras lojas para visualizar a distribuição.</p>
+              </div>
+            ) : (
+              <>
+                <div className="h-[210px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={coloredSegments}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={55}
+                        outerRadius={80}
+                        paddingAngle={3}
+                        dataKey="value"
+                      >
+                        {coloredSegments.map((entry: ColoredDistributionItem, index: number) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(val: number) => [
+                          val >= 100 ? formatCurrency(val) : `${val}%`,
+                          "Volume",
+                        ]}
+                        contentStyle={{
+                          backgroundColor: "var(--popover)",
+                          border: "1px solid var(--border)",
+                          borderRadius: "10px",
+                          fontSize: "12px",
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
-              ))}
-            </div>
+
+                <div className="mt-3 space-y-2 border-t border-border/50 pt-3">
+                  {coloredSegments.map((item: ColoredDistributionItem) => (
+                    <div key={item.name} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span
+                          className="size-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span className="text-muted-foreground truncate">{item.name}</span>
+                      </div>
+                      <span className="font-semibold text-foreground font-mono">
+                        {item.percentage}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>

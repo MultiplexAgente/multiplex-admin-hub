@@ -89,287 +89,34 @@ export const REPOSITORIOS_SEGMENTO: Record<SegmentoEmpresa, { nome: string; live
   },
 };
 
-// Catálogo Inicial Oficial com os Códigos Reais Solicitados
-export const EMPRESAS_INICIAIS: HugEmpresa[] = [
-  {
-    id: "emp-1056",
-    codigo: "1056",
-    nome: "Farmácia Machadão",
-    segmento: "farmacia",
-    segmentoLabel: "Farmácias & Drogarias",
-    documento: "14.288.991/0001-05",
-    email: "contato@farmaciamachadao.com.br",
-    telefone: "(66) 3498-1056",
-    cidade: "Primavera do Leste",
-    estado: "MT",
-    plano: "Business",
-    status: "ativo",
-    usuariosAtivos: 6,
-    criadoEm: "2026-01-10T10:00:00.000Z",
-  },
-  {
-    id: "emp-2030",
-    codigo: "2030",
-    nome: "Farmácia Americanas",
-    segmento: "farmacia",
-    segmentoLabel: "Farmácias & Drogarias",
-    documento: "22.145.882/0001-33",
-    email: "gestao@farmaciaamericanas.com.br",
-    telefone: "(66) 3498-2030",
-    cidade: "Cuiabá",
-    estado: "MT",
-    plano: "Premium",
-    status: "ativo",
-    usuariosAtivos: 12,
-    criadoEm: "2026-02-14T11:30:00.000Z",
-  },
-  {
-    id: "emp-3010",
-    codigo: "3010",
-    nome: "Supermercado Compre Bem",
-    segmento: "mercado",
-    segmentoLabel: "Supermercados & Mercearias",
-    documento: "33.882.110/0001-92",
-    email: "financeiro@comprebem.com.br",
-    telefone: "(66) 3512-3010",
-    cidade: "Rondonópolis",
-    estado: "MT",
-    plano: "Premium",
-    status: "ativo",
-    usuariosAtivos: 18,
-    criadoEm: "2026-02-20T08:00:00.000Z",
-  },
-  {
-    id: "emp-3020",
-    codigo: "3020",
-    nome: "Hipermercado Alvorada",
-    segmento: "mercado",
-    segmentoLabel: "Supermercados & Mercearias",
-    documento: "41.902.331/0001-44",
-    email: "operacao@alvorada.com.br",
-    telefone: "(66) 3512-3020",
-    cidade: "Sinop",
-    estado: "MT",
-    plano: "Business",
-    status: "ativo",
-    usuariosAtivos: 10,
-    criadoEm: "2026-03-01T09:15:00.000Z",
-  },
-  {
-    id: "emp-4010",
-    codigo: "4010",
-    nome: "Moda Elegance Boutique",
-    segmento: "moda",
-    segmentoLabel: "Moda & Vestuário",
-    documento: "19.330.129/0001-88",
-    email: "loja@modaelegance.com.br",
-    telefone: "(66) 3498-4010",
-    cidade: "Primavera do Leste",
-    estado: "MT",
-    plano: "Business",
-    status: "ativo",
-    usuariosAtivos: 5,
-    criadoEm: "2026-03-15T14:00:00.000Z",
-  },
-  {
-    id: "emp-4020",
-    codigo: "4020",
-    nome: "Confecções & Estilo Sul",
-    segmento: "moda",
-    segmentoLabel: "Moda & Vestuário",
-    documento: "28.119.554/0001-71",
-    email: "contato@estilosul.com.br",
-    telefone: "(66) 3498-4020",
-    cidade: "Campo Verde",
-    estado: "MT",
-    plano: "Starter",
-    status: "ativo",
-    usuariosAtivos: 3,
-    criadoEm: "2026-03-22T16:20:00.000Z",
-  },
-  {
-    id: "emp-5010",
-    codigo: "5010",
-    nome: "Restaurante Sabor & Brasa",
-    segmento: "gastronomia",
-    segmentoLabel: "Restaurantes & Gastronomia",
-    documento: "31.772.441/0001-20",
-    email: "adm@saborebrasa.com.br",
-    telefone: "(66) 3498-5010",
-    cidade: "Primavera do Leste",
-    estado: "MT",
-    plano: "Business",
-    status: "ativo",
-    usuariosAtivos: 8,
-    criadoEm: "2026-04-05T12:00:00.000Z",
-  },
-  {
-    id: "emp-5020",
-    codigo: "5020",
-    nome: "Bistrô da Praça Gourmet",
-    segmento: "gastronomia",
-    segmentoLabel: "Restaurantes & Gastronomia",
-    documento: "38.220.998/0001-63",
-    email: "chef@bistrodapraca.com.br",
-    telefone: "(66) 3498-5020",
-    cidade: "Cuiabá",
-    estado: "MT",
-    plano: "Starter",
-    status: "ativo",
-    usuariosAtivos: 4,
-    criadoEm: "2026-04-18T17:45:00.000Z",
-  },
-  {
-    id: "emp-6010",
-    codigo: "6010",
-    nome: "Espaço Beleza VIP",
-    segmento: "beleza",
-    segmentoLabel: "Salões & Estética",
-    documento: "29.441.332/0001-57",
-    email: "agenda@belezavip.com.br",
-    telefone: "(66) 3498-6010",
-    cidade: "Primavera do Leste",
-    estado: "MT",
-    plano: "Business",
-    status: "ativo",
-    usuariosAtivos: 7,
-    criadoEm: "2026-05-02T10:30:00.000Z",
-  },
-  {
-    id: "emp-6020",
-    codigo: "6020",
-    nome: "Salão & Barbearia Imperial",
-    segmento: "beleza",
-    segmentoLabel: "Salões & Estética",
-    documento: "36.881.009/0001-14",
-    email: "contato@barbeariaimperial.com.br",
-    telefone: "(66) 3498-6020",
-    cidade: "Rondonópolis",
-    estado: "MT",
-    plano: "Starter",
-    status: "ativo",
-    usuariosAtivos: 4,
-    criadoEm: "2026-05-19T13:10:00.000Z",
-  },
-  {
-    id: "emp-7010",
-    codigo: "7010",
-    nome: "ConstruMais Materiais & Ferramentas",
-    segmento: "construcao",
-    segmentoLabel: "Materiais, Papelarias, Livrarias & Ferramentas",
-    documento: "18.552.771/0001-99",
-    email: "vendas@construmais.com.br",
-    telefone: "(66) 3498-7010",
-    cidade: "Primavera do Leste",
-    estado: "MT",
-    plano: "Premium",
-    status: "ativo",
-    usuariosAtivos: 14,
-    criadoEm: "2026-06-01T07:30:00.000Z",
-  },
-  {
-    id: "emp-7020",
-    codigo: "7020",
-    nome: "Depósito Fortaleza Materiais",
-    segmento: "construcao",
-    segmentoLabel: "Materiais, Papelarias, Livrarias & Ferramentas",
-    documento: "25.990.412/0001-38",
-    email: "atendimento@fortalezamateriais.com.br",
-    telefone: "(66) 3498-7020",
-    cidade: "Campo Verde",
-    estado: "MT",
-    plano: "Business",
-    status: "ativo",
-    usuariosAtivos: 8,
-    criadoEm: "2026-06-15T08:40:00.000Z",
-  },
-];
+// Catálogo Inicial Limpo para Início de Testes Reais
+export const EMPRESAS_INICIAIS: HugEmpresa[] = [];
 
-export const USUARIOS_CONVITES_INICIAIS: HugUsuarioConvite[] = [
-  {
-    id: "usr-01",
-    nome: "Carlos Eduardo Silva",
-    email: "carlos.balcao@farmaciamachadao.com.br",
-    codigoEmpresa: "1056",
-    nomeEmpresa: "Farmácia Machadão",
-    papel: "funcionario",
-    papelLabel: "Funcionário / Balcão",
-    status: "ativo",
-    convidadoEm: "2026-01-12T14:20:00.000Z",
-    chaveConvite: "HUG-1056-A82F",
-    linkAcesso: "https://six-project-domain-garden.lovable.app/?empresa=1056",
-  },
-  {
-    id: "usr-02",
-    nome: "Dra. Juliana Prado (Farmacêutica RT)",
-    email: "juliana.rt@farmaciamachadao.com.br",
-    codigoEmpresa: "1056",
-    nomeEmpresa: "Farmácia Machadão",
-    papel: "gestor",
-    papelLabel: "Gestor Operacional",
-    status: "ativo",
-    convidadoEm: "2026-01-11T09:00:00.000Z",
-    chaveConvite: "HUG-1056-B11C",
-    linkAcesso: "https://six-project-domain-garden.lovable.app/?empresa=1056",
-  },
-  {
-    id: "usr-03",
-    nome: "Roberto Mendes",
-    email: "roberto@farmaciaamericanas.com.br",
-    codigoEmpresa: "2030",
-    nomeEmpresa: "Farmácia Americanas",
-    papel: "admin",
-    papelLabel: "Administrador da Empresa",
-    status: "ativo",
-    convidadoEm: "2026-02-15T10:15:00.000Z",
-    chaveConvite: "HUG-2030-C90X",
-    linkAcesso: "https://six-project-domain-garden.lovable.app/?empresa=2030",
-  },
-  {
-    id: "usr-04",
-    nome: "Fernanda Souza",
-    email: "fernanda.caixa@comprebem.com.br",
-    codigoEmpresa: "3010",
-    nomeEmpresa: "Supermercado Compre Bem",
-    papel: "caixa",
-    papelLabel: "Operador de Caixa",
-    status: "ativo",
-    convidadoEm: "2026-02-22T08:30:00.000Z",
-    chaveConvite: "HUG-3010-F44D",
-    linkAcesso: "https://hug-mercados-bridge.lovable.app/?empresa=3010",
-  },
-  {
-    id: "usr-05",
-    nome: "Marcos Vinicius Vendas",
-    email: "marcos@construmais.com.br",
-    codigoEmpresa: "7010",
-    nomeEmpresa: "ConstruMais Materiais & Ferramentas",
-    papel: "funcionario",
-    papelLabel: "Funcionário / Balcão",
-    status: "ativo",
-    convidadoEm: "2026-06-03T11:00:00.000Z",
-    chaveConvite: "HUG-7010-Z77Q",
-    linkAcesso: "https://hug-construcao-connect.lovable.app/?empresa=7010",
-  },
-];
+export const USUARIOS_CONVITES_INICIAIS: HugUsuarioConvite[] = [];
 
 const STORAGE_KEY_EMPRESAS = "hug_admin_empresas";
 const STORAGE_KEY_CONVITES = "hug_admin_convites";
 
 /**
- * Obtém a lista de empresas cadastradas
+ * Obtém a lista de empresas cadastradas (limpa dados fictícios de mock)
  */
 export function getEmpresas(): HugEmpresa[] {
-  if (typeof window === "undefined") return EMPRESAS_INICIAIS;
+  if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY_EMPRESAS);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY_EMPRESAS, JSON.stringify(EMPRESAS_INICIAIS));
-      return EMPRESAS_INICIAIS;
+      localStorage.setItem(STORAGE_KEY_EMPRESAS, JSON.stringify([]));
+      return [];
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    // Remove dados de teste legados caso ainda estejam no localStorage
+    if (Array.isArray(parsed) && parsed.some((e: any) => e.id?.startsWith("emp-") && (e.codigo === "1056" || e.codigo === "7010" || e.codigo === "2030"))) {
+      localStorage.setItem(STORAGE_KEY_EMPRESAS, JSON.stringify([]));
+      return [];
+    }
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return EMPRESAS_INICIAIS;
+    return [];
   }
 }
 
@@ -445,16 +192,21 @@ export function buscarEmpresaPorCodigo(codigo: string): HugEmpresa | undefined {
  * Obtém todos os usuários e convites
  */
 export function getUsuariosConvites(): HugUsuarioConvite[] {
-  if (typeof window === "undefined") return USUARIOS_CONVITES_INICIAIS;
+  if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY_CONVITES);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY_CONVITES, JSON.stringify(USUARIOS_CONVITES_INICIAIS));
-      return USUARIOS_CONVITES_INICIAIS;
+      localStorage.setItem(STORAGE_KEY_CONVITES, JSON.stringify([]));
+      return [];
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.some((u: any) => u.id?.startsWith("usr-0") || u.chaveConvite?.includes("HUG-1056"))) {
+      localStorage.setItem(STORAGE_KEY_CONVITES, JSON.stringify([]));
+      return [];
+    }
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return USUARIOS_CONVITES_INICIAIS;
+    return [];
   }
 }
 
