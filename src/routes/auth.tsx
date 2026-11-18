@@ -30,7 +30,6 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const [mode, setMode] = useState<"login" | "forgot">("login");
   const [empresaDetectada, setEmpresaDetectada] = useState<{ nome: string; segmentoLabel: string } | null>(null);
 
   // Carrega automaticamente o código da loja salvo no dispositivo
@@ -75,16 +74,6 @@ function AuthPage() {
     event.preventDefault();
     setBusy(true);
     try {
-      if (mode === "forgot") {
-        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-          redirectTo: `${window.location.origin}/reset-password`,
-        });
-        if (error) throw error;
-        toast.success("Enviamos um link de redefinição para o seu e-mail.");
-        setMode("login");
-        return;
-      }
-
       if (codigoEmpresa) {
         localStorage.setItem("hug_codigo_loja", codigoEmpresa);
       }
@@ -168,41 +157,29 @@ function AuthPage() {
             </div>
           </div>
 
-          {mode === "login" ? (
-            <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Senha
-              </Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="pl-9 text-sm bg-background/50"
-                />
-              </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Senha
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="pl-9 text-sm bg-background/50"
+              />
             </div>
-          ) : null}
+          </div>
 
           <Button type="submit" className="w-full font-semibold shadow-lg shadow-primary/20" disabled={busy}>
-            {busy ? "Acessando..." : mode === "login" ? "Entrar no Sistema HUG" : "Enviar link de redefinição"}
+            {busy ? "Acessando..." : "Entrar"}
             {!busy && <ArrowRight className="ml-2 size-4" />}
           </Button>
-
-          <div className="pt-2 text-center">
-            <button
-              type="button"
-              className="text-xs text-muted-foreground underline-offset-4 hover:underline hover:text-foreground transition-colors"
-              onClick={() => setMode(mode === "login" ? "forgot" : "login")}
-            >
-              {mode === "login" ? "Esqueci minha senha" : "Voltar para o login"}
-            </button>
-          </div>
         </form>
 
         <p className="mt-6 text-center text-xs text-muted-foreground/70">
