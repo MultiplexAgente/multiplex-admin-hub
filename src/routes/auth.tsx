@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Lock, Mail, ArrowRight } from "lucide-react";
+import { Lock, Mail, ArrowRight, Eye, EyeOff } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ function AuthPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -39,9 +40,11 @@ function AuthPage() {
     event.preventDefault();
     setBusy(true);
     try {
+      const cleanEmail = email.trim().toLowerCase();
+      const cleanPassword = password.trim();
       const { error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
+        email: cleanEmail,
+        password: cleanPassword,
       });
       if (error) throw error;
       navigate({ to: "/dashboard", replace: true });
@@ -102,14 +105,22 @@ function AuthPage() {
               <Lock className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
               <Input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="pl-9 text-sm bg-background/50"
+                className="pl-9 pr-10 text-sm bg-background/50"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground transition-colors"
+                title={showPassword ? "Ocultar senha" : "Ver senha"}
+              >
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
             </div>
           </div>
 
