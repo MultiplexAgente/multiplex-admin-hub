@@ -146,6 +146,44 @@ export function getEmpresas(): HugEmpresa[] {
 }
 
 /**
+ * Gera um novo código exclusivo de 4 dígitos não utilizado para uma empresa
+ */
+export function gerarNovoCodigoEmpresa(segmento?: SegmentoEmpresa): string {
+  const lista = getEmpresas();
+  const codigosExistentes = new Set(lista.map((e) => e.codigo));
+
+  // Faixas preferenciais por segmento para organização dos painéis
+  const faixas: Record<SegmentoEmpresa, [number, number]> = {
+    farmacia: [1000, 2999],
+    mercado: [3000, 3999],
+    moda: [4000, 4999],
+    gastronomia: [5000, 5999],
+    beleza: [6000, 6999],
+    construcao: [7000, 8999],
+  };
+
+  const [min, max] = segmento && faixas[segmento] ? faixas[segmento] : [1000, 9999];
+  let tentativas = 0;
+
+  while (tentativas < 300) {
+    const num = Math.floor(Math.random() * (max - min + 1)) + min;
+    const code = String(num);
+    if (!codigosExistentes.has(code)) {
+      return code;
+    }
+    tentativas++;
+  }
+
+  // Fallback geral procurando o primeiro vago
+  for (let n = 1000; n <= 9999; n++) {
+    const s = String(n);
+    if (!codigosExistentes.has(s)) return s;
+  }
+
+  return String(Math.floor(1000 + Math.random() * 8999));
+}
+
+/**
  * Cadastra ou atualiza uma empresa
  */
 export function salvarEmpresa(empresa: Partial<HugEmpresa> & { nome: string; segmento: SegmentoEmpresa }): HugEmpresa {
@@ -154,12 +192,7 @@ export function salvarEmpresa(empresa: Partial<HugEmpresa> & { nome: string; seg
   // Se não foi informado código, gera um código de 4 dígitos não utilizado
   let codigo = empresa.codigo?.trim();
   if (!codigo) {
-    const codigosExistentes = new Set(lista.map((e) => e.codigo));
-    let num = 1000 + Math.floor(Math.random() * 8999);
-    while (codigosExistentes.has(String(num))) {
-      num = 1000 + Math.floor(Math.random() * 8999);
-    }
-    codigo = String(num);
+    codigo = gerarNovoCodigoEmpresa(empresa.segmento);
   }
 
   // Verifica se o código já é usado por outra empresa

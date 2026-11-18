@@ -20,6 +20,10 @@ import {
   Calendar,
   Wallet,
   Share2,
+  RefreshCw,
+  Hash,
+  Store,
+  Globe,
 } from "lucide-react";
 
 import { PageHeader } from "@/components/page-header";
@@ -46,6 +50,7 @@ import {
   getEmpresas,
   salvarEmpresa,
   removerEmpresa,
+  gerarNovoCodigoEmpresa,
   gerarConvitePainel,
   alternarStatusAssinatura,
   registrarPagamentoMensalidade,
@@ -75,6 +80,57 @@ export const Route = createFileRoute("/_authenticated/companies")({
   }),
   component: CompaniesPage,
 });
+
+const PAINEIS_CADASTRO: {
+  segmento: SegmentoEmpresa;
+  titulo: string;
+  subtitulo: string;
+  liveUrl: string;
+  faixa: string;
+}[] = [
+  {
+    segmento: "farmacia",
+    titulo: "Painel Farmácias & Drogarias",
+    subtitulo: "Receituário, genéricos, perfumaria e balcão farmacêutico",
+    liveUrl: REPOSITORIOS_SEGMENTO.farmacia.liveApp,
+    faixa: "1000 - 2999",
+  },
+  {
+    segmento: "mercado",
+    titulo: "Painel Supermercados & Mercearias",
+    subtitulo: "Frente de caixa, pesagem, gôndolas, hortifrúti e açougue",
+    liveUrl: REPOSITORIOS_SEGMENTO.mercado.liveApp,
+    faixa: "3000 - 3999",
+  },
+  {
+    segmento: "moda",
+    titulo: "Painel Moda & Vestuário",
+    subtitulo: "Grade de cor/tamanho, vitrine digital, provadores e condicional",
+    liveUrl: REPOSITORIOS_SEGMENTO.moda.liveApp,
+    faixa: "4000 - 4999",
+  },
+  {
+    segmento: "gastronomia",
+    titulo: "Painel Restaurantes & Gastronomia",
+    subtitulo: "Mesas, comandas digitais, KDS cozinha e pedidos",
+    liveUrl: REPOSITORIOS_SEGMENTO.gastronomia.liveApp,
+    faixa: "5000 - 5999",
+  },
+  {
+    segmento: "beleza",
+    titulo: "Painel Salões & Estética",
+    subtitulo: "Agendamentos, comissões de profissionais e barbearias",
+    liveUrl: REPOSITORIOS_SEGMENTO.beleza.liveApp,
+    faixa: "6000 - 6999",
+  },
+  {
+    segmento: "construcao",
+    titulo: "Painel Materiais, Papelarias & Ferramentas",
+    subtitulo: "Orçamentos de obra, faturamento fracionado e tintas",
+    liveUrl: REPOSITORIOS_SEGMENTO.construcao.liveApp,
+    faixa: "7000 - 8999",
+  },
+];
 
 function CompaniesPage() {
   const [empresas, setEmpresas] = useState<HugEmpresa[]>(() => getEmpresas());
@@ -109,6 +165,30 @@ function CompaniesPage() {
   function handlePlanoChange(novoPlano: "Starter" | "Business" | "Premium") {
     setPlano(novoPlano);
     setValorMensalidade(PRECOS_PLANOS[novoPlano] || 499);
+  }
+
+  function handleAbrirModalCadastro() {
+    const segPadrao: SegmentoEmpresa = "farmacia";
+    setSegmento(segPadrao);
+    const codSugerido = gerarNovoCodigoEmpresa(segPadrao);
+    setCodigo(codSugerido);
+    setPlano("Business");
+    setValorMensalidade(PRECOS_PLANOS.Business);
+    setDiaVencimento(10);
+    setMostrarModalCadastro(true);
+  }
+
+  function handleGerarNovoCodigo() {
+    const novo = gerarNovoCodigoEmpresa(segmento);
+    setCodigo(novo);
+    toast.success(`Código exclusivo ${novo} gerado com sucesso para este painel!`);
+  }
+
+  function handleSelecionarPainel(novoSeg: SegmentoEmpresa) {
+    setSegmento(novoSeg);
+    const novo = gerarNovoCodigoEmpresa(novoSeg);
+    setCodigo(novo);
+    toast.info(`Painel selecionado: ${REPOSITORIOS_SEGMENTO[novoSeg].nome}. Novo código ${novo} gerado.`);
   }
 
   function handleCadastrar(e: React.FormEvent) {
@@ -254,7 +334,7 @@ function CompaniesPage() {
           description="Controle de filiais por segmento, links de convite dedicados e controle mensal de pagamentos com suspensão imediata de inadimplentes."
         />
         <Button
-          onClick={() => setMostrarModalCadastro(true)}
+          onClick={handleAbrirModalCadastro}
           className="bg-primary text-primary-foreground hover:bg-primary/90 gap-1.5 shrink-0"
         >
           <Plus className="size-4" /> Cadastrar Nova Empresa
@@ -340,192 +420,304 @@ function CompaniesPage() {
         </Card>
       </div>
 
-      {/* MODAL / FORMULÁRIO DE CADASTRO */}
+      {/* MODAL / FORMULÁRIO DE CADASTRO COM ESCOLHA DE PAINEL E GERADOR DE CÓDIGO */}
       {mostrarModalCadastro && (
-        <Card className="border-primary/40 bg-card shadow-xl">
-          <CardContent className="pt-6">
-            <form onSubmit={handleCadastrar} className="space-y-4">
-              <div className="flex items-center justify-between border-b pb-3">
-                <div className="flex items-center gap-2">
-                  <Building2 className="size-5 text-primary" />
-                  <h3 className="font-semibold text-base">Nova Empresa no HUG</h3>
+        <Card className="border-primary/50 bg-card shadow-2xl overflow-hidden animate-in fade-in-50 duration-200">
+          <CardHeader className="border-b bg-muted/20 pb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Building2 className="size-5" />
                 </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setMostrarModalCadastro(false)}
-                >
-                  Cancelar
-                </Button>
+                <div>
+                  <CardTitle className="text-base font-bold flex items-center gap-2">
+                    Cadastrar Nova Empresa no HUG
+                    <Badge className="bg-primary/20 text-primary border-primary/40 text-[11px] font-mono">
+                      {REPOSITORIOS_SEGMENTO[segmento].nome}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Escolha o painel específico de destino e utilize o gerador de código exclusivo para isolamento total dos dados.
+                  </CardDescription>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setMostrarModalCadastro(false)}
+              >
+                Cancelar
+              </Button>
+            </div>
+          </CardHeader>
+
+          <CardContent className="pt-5">
+            <form onSubmit={handleCadastrar} className="space-y-6">
+              {/* SEÇÃO 1: ESCOLHA DO PAINEL DE DESTINO */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
+                    <Store className="size-4 text-primary" />
+                    1. Escolha para qual Painel é o Cadastro *
+                  </label>
+                  <span className="text-[11px] text-muted-foreground">
+                    Clique em um dos painéis abaixo para vincular a empresa
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {PAINEIS_CADASTRO.map((p) => {
+                    const ativo = segmento === p.segmento;
+                    return (
+                      <button
+                        type="button"
+                        key={p.segmento}
+                        onClick={() => handleSelecionarPainel(p.segmento)}
+                        className={`text-left p-3.5 rounded-xl border transition-all relative flex flex-col justify-between gap-2.5 ${
+                          ativo
+                            ? "border-primary bg-primary/10 ring-2 ring-primary/50 shadow-md"
+                            : "border-border hover:border-primary/40 bg-card hover:bg-muted/30"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <span className={`font-bold text-xs leading-tight ${ativo ? "text-primary" : "text-foreground"}`}>
+                            {p.titulo}
+                          </span>
+                          {ativo ? (
+                            <CheckCircle2 className="size-4 text-primary shrink-0" />
+                          ) : (
+                            <div className="size-4 rounded-full border border-border/80 shrink-0" />
+                          )}
+                        </div>
+                        <p className="text-[11px] text-muted-foreground line-clamp-2">
+                          {p.subtitulo}
+                        </p>
+                        <div className="pt-2 border-t border-border/40 flex items-center justify-between text-[10px] text-muted-foreground font-mono">
+                          <span className="truncate flex items-center gap-1">
+                            <Globe className="size-3 text-primary shrink-0" />
+                            {p.liveUrl.replace("https://", "")}
+                          </span>
+                          <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 shrink-0 font-mono">
+                            Faixa: {p.faixa}
+                          </Badge>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Banner informativo com a URL do painel selecionado */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-3.5 py-2.5 rounded-lg bg-primary/5 border border-primary/20 text-xs">
+                  <div className="flex items-center gap-2">
+                    <Globe className="size-3.5 text-primary shrink-0" />
+                    <span className="font-semibold text-foreground">
+                      Painel Selecionado:
+                    </span>
+                    <span className="text-primary font-mono font-medium">
+                      {REPOSITORIOS_SEGMENTO[segmento].nome} ({REPOSITORIOS_SEGMENTO[segmento].liveApp})
+                    </span>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] bg-background">
+                    Segmento: {SEGMENTOS_LABELS[segmento]}
+                  </Badge>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Nome da Empresa / Razão Social *
-                  </label>
-                  <Input
-                    required
-                    placeholder="Ex: Farmácia Machadão Matriz"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                  />
-                </div>
+              {/* SEÇÃO 2: GERADOR DE CÓDIGO EXCLUSIVO & DADOS DA EMPRESA */}
+              <div className="space-y-4 pt-4 border-t border-border/60">
+                <label className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
+                  <Hash className="size-4 text-primary" />
+                  2. Código Exclusivo & Identificação da Organização
+                </label>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Código Exclusivo (4 dígitos)
-                  </label>
-                  <Input
-                    placeholder="Ex: 1056 (deixe vazio p/ gerar)"
-                    value={codigo}
-                    onChange={(e) => setCodigo(e.target.value)}
-                  />
-                  <p className="text-[10px] text-muted-foreground">
-                    Gerado automaticamente se deixado em branco.
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Segmento Comercial (Define o Painel) *
-                  </label>
-                  <Select
-                    value={segmento}
-                    onValueChange={(v) => setSegmento(v as SegmentoEmpresa)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(SEGMENTOS_LABELS).map(([k, label]) => (
-                        <SelectItem key={k} value={k}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Plano de Assinatura
-                  </label>
-                  <Select
-                    value={plano}
-                    onValueChange={(v) =>
-                      handlePlanoChange(v as "Starter" | "Business" | "Premium")
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Starter">Starter (R$ 299,00/mês)</SelectItem>
-                      <SelectItem value="Business">Business (R$ 499,00/mês)</SelectItem>
-                      <SelectItem value="Premium">Premium (R$ 899,00/mês)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Valor Mensalidade (R$)
-                  </label>
-                  <Input
-                    type="number"
-                    value={valorMensalidade}
-                    onChange={(e) => setValorMensalidade(Number(e.target.value))}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Dia de Vencimento Mensal
-                  </label>
-                  <Select
-                    value={String(diaVencimento)}
-                    onValueChange={(v) => setDiaVencimento(Number(v))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="5">Dia 05 de cada mês</SelectItem>
-                      <SelectItem value="10">Dia 10 de cada mês</SelectItem>
-                      <SelectItem value="15">Dia 15 de cada mês</SelectItem>
-                      <SelectItem value="20">Dia 20 de cada mês</SelectItem>
-                      <SelectItem value="25">Dia 25 de cada mês</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    CNPJ / Documento
-                  </label>
-                  <Input
-                    placeholder="00.000.000/0001-00"
-                    value={documento}
-                    onChange={(e) => setDocumento(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    E-mail de Contato
-                  </label>
-                  <Input
-                    type="email"
-                    placeholder="contato@empresa.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Telefone / WhatsApp (P/ Convite)
-                  </label>
-                  <Input
-                    placeholder="(66) 99999-0000"
-                    value={telefone}
-                    onChange={(e) => setTelefone(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Cidade / UF
-                  </label>
-                  <div className="flex gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-1.5 md:col-span-2">
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Nome da Empresa / Razão Social *
+                    </label>
                     <Input
-                      placeholder="Cidade"
-                      value={cidade}
-                      onChange={(e) => setCidade(e.target.value)}
+                      required
+                      placeholder="Ex: Farmácia Popular Central Matriz"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      className="bg-background text-sm font-medium"
                     />
+                  </div>
+
+                  {/* GERADOR DE CÓDIGO EXCLUSIVO INTEGRADO */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                        Código Exclusivo (4 dígitos) *
+                      </label>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={handleGerarNovoCodigo}
+                        className="h-6 text-[11px] gap-1 px-2 text-primary border-primary/40 hover:bg-primary/10"
+                      >
+                        <RefreshCw className="size-3" /> Gerar Novo
+                      </Button>
+                    </div>
                     <Input
-                      className="w-20"
-                      placeholder="UF"
-                      value={estado}
-                      onChange={(e) => setEstado(e.target.value)}
+                      required
+                      maxLength={6}
+                      placeholder="Ex: 1056"
+                      value={codigo}
+                      onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))}
+                      className="font-mono text-base font-bold tracking-widest text-primary bg-background border-primary/50 text-center"
                     />
+                    <p className="text-[10px] text-muted-foreground">
+                      Código único gerado. Os colaboradores usarão no login deste painel.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      CNPJ / Documento
+                    </label>
+                    <Input
+                      placeholder="00.000.000/0001-00"
+                      value={documento}
+                      onChange={(e) => setDocumento(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      E-mail Corporativo
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="contato@empresa.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Telefone / WhatsApp (Para Convite)
+                    </label>
+                    <Input
+                      placeholder="(66) 99999-0000"
+                      value={telefone}
+                      onChange={(e) => setTelefone(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 md:col-span-3">
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Cidade / UF
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Cidade"
+                        value={cidade}
+                        onChange={(e) => setCidade(e.target.value)}
+                      />
+                      <Input
+                        className="w-24 text-center font-bold"
+                        placeholder="UF"
+                        maxLength={2}
+                        value={estado}
+                        onChange={(e) => setEstado(e.target.value.toUpperCase())}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setMostrarModalCadastro(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit" className="bg-primary text-primary-foreground font-semibold">
-                  Salvar Empresa e Gerar Link do Painel
-                </Button>
+              {/* SEÇÃO 3: PLANO & GESTÃO DE MENSALIDADE */}
+              <div className="space-y-3 pt-4 border-t border-border/60">
+                <label className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
+                  <Receipt className="size-4 text-emerald-400" />
+                  3. Plano de Assinatura & Cobrança Mensal
+                </label>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Plano HUG
+                    </label>
+                    <Select
+                      value={plano}
+                      onValueChange={(v) =>
+                        handlePlanoChange(v as "Starter" | "Business" | "Premium")
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Starter">Starter (R$ 299,00/mês)</SelectItem>
+                        <SelectItem value="Business">Business (R$ 499,00/mês)</SelectItem>
+                        <SelectItem value="Premium">Premium (R$ 899,00/mês)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Valor Mensalidade (R$)
+                    </label>
+                    <Input
+                      type="number"
+                      value={valorMensalidade}
+                      onChange={(e) => setValorMensalidade(Number(e.target.value))}
+                      className="font-mono font-bold"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Dia de Vencimento Mensal
+                    </label>
+                    <Select
+                      value={String(diaVencimento)}
+                      onValueChange={(v) => setDiaVencimento(Number(v))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5">Dia 05 de cada mês</SelectItem>
+                        <SelectItem value="10">Dia 10 de cada mês</SelectItem>
+                        <SelectItem value="15">Dia 15 de cada mês</SelectItem>
+                        <SelectItem value="20">Dia 20 de cada mês</SelectItem>
+                        <SelectItem value="25">Dia 25 de cada mês</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* RODAPÉ DO FORMULÁRIO */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t">
+                <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+                  <span>
+                    Ao salvar, a empresa será vinculada ao <strong>{REPOSITORIOS_SEGMENTO[segmento].nome}</strong> com link oficial gerado.
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setMostrarModalCadastro(false)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-primary text-primary-foreground font-semibold gap-1.5"
+                  >
+                    <Send className="size-3.5" /> Salvar Empresa e Gerar Link do Painel
+                  </Button>
+                </div>
               </div>
             </form>
           </CardContent>
