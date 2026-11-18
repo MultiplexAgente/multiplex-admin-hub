@@ -206,7 +206,15 @@ function AuthPage() {
         </form>
 
         <p className="mt-6 text-center text-xs text-muted-foreground/70">
-          HUG Operações Integradas &copy; 2026 BonaSoft
+          HUG Operações Integradas &copy; 2026{" "}
+          <a
+            href="https://bonasoftmt.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-primary transition-colors underline-offset-4 hover:underline"
+          >
+            BonaSoft
+          </a>
         </p>
       </div>
     </main>
