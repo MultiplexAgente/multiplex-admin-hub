@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Cpu } from "lucide-react";
 
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,43 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { fetchAgent, saveAgent } from "@/lib/db";
+
+export const AI_MODELS = [
+  {
+    group: "ChatGPT (OpenAI)",
+    models: [
+      { id: "gpt-4o", label: "ChatGPT 4o (Flagship - Atendimento & Vendas)", defaultTemp: "0.7" },
+      { id: "gpt-4o-mini", label: "ChatGPT 4o Mini (Ultra Rápido & Econômico)", defaultTemp: "0.6" },
+      { id: "gpt-5.6-sol", label: "OpenAI Astra (Próxima Geração)", defaultTemp: "0.7" },
+    ],
+  },
+  {
+    group: "DeepSeek",
+    models: [
+      { id: "deepseek-chat", label: "DeepSeek V4 Pro (Chat Comercial & Suporte)", defaultTemp: "0.5" },
+      { id: "deepseek-reasoner", label: "DeepSeek R1 (Raciocínio Lógico & Orçamentos)", defaultTemp: "0.4" },
+      { id: "deepseek-flash", label: "DeepSeek Flash (Respostas Instantâneas)", defaultTemp: "0.5" },
+    ],
+  },
+  {
+    group: "Claude (Anthropic)",
+    models: [
+      { id: "claude-sonnet-4-5", label: "Claude Sonnet 4.5 (Raciocínio Contextual)", defaultTemp: "0.7" },
+      { id: "claude-haiku-4-5", label: "Claude Haiku 4.5 (Triagem Rápida)", defaultTemp: "0.6" },
+    ],
+  },
+];
 
 export const Route = createFileRoute("/_authenticated/agents/$id")({
   head: () => ({
@@ -43,7 +78,7 @@ function AgentDetailPage() {
   const [form, setForm] = useState({
     name: "",
     description: "",
-    model: "",
+    model: "gpt-4o",
     system_prompt: "",
     temperature: "0.7",
     active: true,
@@ -107,13 +142,36 @@ function AgentDetailPage() {
               <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="model">Modelo</Label>
-              <Input
-                id="model"
-                placeholder="ex.: gpt-4o-mini"
-                value={form.model}
-                onChange={(e) => setForm({ ...form, model: e.target.value })}
-              />
+              <Label htmlFor="model">Modelo de Inteligência Artificial</Label>
+              <Select
+                value={form.model || "gpt-4o"}
+                onValueChange={(val) => {
+                  const found = AI_MODELS.flatMap((g) => g.models).find((m) => m.id === val);
+                  setForm({
+                    ...form,
+                    model: val,
+                    ...(found ? { temperature: found.defaultTemp } : {}),
+                  });
+                }}
+              >
+                <SelectTrigger id="model">
+                  <SelectValue placeholder="Selecione o motor de IA..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {AI_MODELS.map((group) => (
+                    <SelectGroup key={group.group}>
+                      <SelectLabel className="font-bold text-xs uppercase tracking-wider text-primary">
+                        {group.group}
+                      </SelectLabel>
+                      {group.models.map((m) => (
+                        <SelectItem key={m.id} value={m.id} className="text-xs">
+                          {m.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
